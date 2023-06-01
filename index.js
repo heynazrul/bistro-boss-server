@@ -8,7 +8,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.4zbzvmu.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -26,15 +25,20 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const menuCollection = client.db('bistroDB').collection('menu')
+    const menuCollection = client.db('bistroDB').collection('menu');
+    const reviewCollection = client.db('bistroDB').collection('reviews');
 
-    // get all items in database collection "menu"
-    app.get('/menu', async(req,res) => {
+    // get all items in database collection "menu"     <<========
+    app.get('/menu', async (req, res) => {
       const result = await menuCollection.find().toArray();
-      res.send(result)
-    })
+      res.send(result);
+    });
 
-
+    // get all reviews from database collection "reviews"   <<=======
+    app.get('/reviews', async (req, res) => {
+      const result = await reviewCollection.find().toArray();
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 });
@@ -45,9 +49,6 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
-
-
 
 app.get('/', (req, res) => {
   res.send('Bistro boss is running');
