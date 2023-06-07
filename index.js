@@ -4,6 +4,8 @@ const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 
+const jwt = require('jsonwebtoken');
+
 // middlware
 app.use(cors());
 app.use(express.json());
@@ -30,6 +32,13 @@ async function run() {
     const reviewCollection = client.db('bistroDB').collection('reviews');
     const cartCollection = client.db('bistroDB').collection('carts');
 
+    // JWT
+    app.post('/jwt', (req, res) => {
+      const user = req.body
+      const token = jwt.sign(user, env.process.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
+      res.send(token)
+    })
+
     // users related API
 
     app.get('/users', async(req, res) => {
@@ -48,7 +57,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch('users/admin/:id', async(req,res) => {
+    app.patch('/users/admin/:id', async(req,res) => {
       const id = req.params.id
       const filter = {_id: new ObjectId(id)}
       const updateDoc = {
